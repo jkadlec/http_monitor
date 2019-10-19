@@ -1,0 +1,12 @@
+version: "3"
+
+services:
+  processor:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - INPUT_FILE=${INPUT_FILE}
+    env_file: settings.env
+    volumes:
+      - ${PWD}:/app/worker
