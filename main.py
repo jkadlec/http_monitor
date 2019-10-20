@@ -1,6 +1,6 @@
 from sys import argv, stdin
-from log_processor import LogProcessor
-from config import Config
+from log_processor import LogProcessor, Actions
+from config import Config as conf
 from typing import IO
 
 
@@ -8,14 +8,17 @@ def _read_stream(stream: IO[str], proc: 'LogProcessor') -> None:
     # discard header
     stream.readline()
     for line in stream:
-        _, output = proc.next_entry(line)
-        if any(output):
+        action, output = proc.next_entry(line)
+        if action == Actions.STATS:
+            if conf.DISPLAY_STATS:
+                print(output)
+        elif action != Actions.NO_OP:
             print(output)
 
 
 def main(file_path: str) -> None:
-    proc = LogProcessor(high_traffic_timespan=Config.HIGH_TRAFFIC_TIMESPAN,
-                        high_traffic_threshold=Config.HIGH_TRAFFIC_THRESHOLD)
+    proc = LogProcessor(high_traffic_timespan=conf.HIGH_TRAFFIC_TIMESPAN,
+                        high_traffic_threshold=conf.HIGH_TRAFFIC_THRESHOLD)
     if file_path == '-':
         _read_stream(stdin, proc)
     else:

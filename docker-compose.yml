@@ -9,4 +9,4 @@ services:
       - INPUT_FILE=${INPUT_FILE}
     env_file: settings.env
     volumes:
-      - ${PWD}:/app/worker
+      - ${PWD}:/app
