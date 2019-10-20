@@ -1,3 +1,5 @@
+#! /usr/local/bin/python3
+
 from sys import argv, stdin
 from log_processor import LogProcessor, Actions
 from config import Config as conf
@@ -28,6 +30,6 @@ def main(file_path: str) -> None:
 
 if __name__ == '__main__':
     if len(argv) != 2:
-        print('usage: ./{argv[0]} <input_file>\nUse "-" to read from stdin')
+        print(f'usage: {argv[0]} <input_file>\nUse "-" to read from stdin')
     else:
         main(argv[1])

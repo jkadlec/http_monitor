@@ -2,6 +2,7 @@ version: "3"
 
 services:
   processor:
+    image: datadog/processor
     build:
       context: .
       dockerfile: Dockerfile

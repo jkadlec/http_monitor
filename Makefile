@@ -5,8 +5,5 @@ check:
 build:
 	docker-compose build
 
-run:
-	
-
-up:
-	docker-compose up
+run_stdin: build
+	docker run -e DISPLAY_STATS=${DISPLAY_STATS} -e INPUT_FILE='-' -i --rm datadog/processor
