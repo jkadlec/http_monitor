@@ -1,0 +1,72 @@
+HTTP monitor
+
+TLDR:
+    make check
+    make test
+    cat input.csv | make HIGH_TRAFFIC_THRESHOLD=10 DISPLAY_STATS=true run_stdin
+
+Disclaimer:
+    I definitely spent more than 3 hours on this.
+    By the 3 hour mark I was maybe done with the stats part and some tooling, but there were
+    no tests and no alert functionality. I think I spent about 5 hours with this task in total unfortunately.
+
+Approach:
+    The input is almost sorted by time, so we can write all the logic as if the input was sorted
+    and sort incoming batches. If the "skew" would be bigger than it is in the
+    sample file, this approach wouldn't work. See config.py to for the biggest combination that works.
+
+    Doing the batch sort simplifies rest of the code a lot, since we can now accumulate all the data for given
+    second and only when we encounter the next second take some potential action.
+
+    The stats part is quite straightforward, we just store all the data for the given time period and then
+    turn it into strings. It would be possible to do this per-second on the fly to save memory, but the approach
+    when everything is stored is easier. The array is reset after stats are printed.
+
+    For the alerting part I've decided to store the per-second request counts in a sliding window of sorts.
+    The approach I took only works if there are no gaps in the timestamps. It would be easy to extend though,
+    by adding zeros to the window whenever we see a new timestamp which isn't prev_timestamp + 1.
+
+Files:
+    main.py: pre-sorting functions and reading the input.
+    config.py: configuration values, some are changeable using env variables.
+    log_processor.py: contains 3 classes, Entry (stores the log lines) and LogProcessor, which is the main class.
+                      LogProcessor expects sorted input and works on line-by-line basis. It returns a tuple
+                      with possible stats and alert actions as well as the strings to print.
+                      The enum with actions is the third class.
+
+    tests.py: really simple test for the alerting logic.
+    Makefile: build, test or run the project.
+    Dockerfile: really simple dockerfile, doesn't install anything.
+    test.Dockerfile: dockerfile for tests, installs pytest.
+    docker-compose.yml: docker compose file with just one container.
+    input.csv: the test file that was provided.
+
+TODOs:
+    More tests, only had time to write a simple test for the alerting logic, the stats functionality is
+    not tested at all.
+
+    More docstrings, really light on these, hopefully most of the code is self-explanatory but the public
+    methods and the LogProcessor need more documentation for sure.
+
+    I wrote the stats logic first and it shows, the alerting part of the code behaves a bit differently.
+
+    The naming is a bit incosistent.
+
+    Partial stats are not printed at the end.
+
+    Some of the checks that decide whether this is the first entry are a bit ugly.
+
+    There is almost no input checking.
+
+How to run:
+    You need make and docker installed. To start the program do "make run_stdin" and pipe the input to it.
+    See the top of this readme.
+
+    mypy and flake8 checks can be done by "make check".
+
+    Tests can be executed by "make test".
+
+    After you're done with testing, do "make cleanup" to delete the created docker images.
+
+Author:
+    jan.kadlec.cz@gmail.com

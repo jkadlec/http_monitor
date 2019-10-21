@@ -1,14 +1,16 @@
 DISPLAY_STATS ?= true
 HIGH_TRAFFIC_THRESHOLD ?= 10
 
-check:
+install_tools:
+	pip3 install mypy flake8
+
+check: install_tools
 	mypy .
 	flake8 --max-line-length=120
 
 test:
 	docker build -t datadog/processor_tests -f test.Dockerfile .
 	docker run -i --rm datadog/processor_tests
-
 
 build:
 	docker-compose build
@@ -18,3 +20,6 @@ run_stdin: build
 
 cleanup:
 	docker rmi datadog/processor_tests datadog/processor
+
+zip:
+	git archive -o monitor.zip HEAD
