@@ -9,17 +9,17 @@ check: install_tools
 	flake8 --max-line-length=120
 
 test:
-	docker build -t datadog/processor_tests -f test.Dockerfile .
-	docker run -i --rm datadog/processor_tests
+	docker build -t monitor/processor_tests -f test.Dockerfile .
+	docker run -i --rm monitor/processor_tests
 
 build:
 	docker-compose build
 
 run_stdin: build
-	docker run -e DISPLAY_STATS=$(DISPLAY_STATS) -e HIGH_TRAFFIC_THRESHOLD=$(HIGH_TRAFFIC_THRESHOLD) -e INPUT_FILE='-' -i --rm datadog/processor
+	docker run -e DISPLAY_STATS=$(DISPLAY_STATS) -e HIGH_TRAFFIC_THRESHOLD=$(HIGH_TRAFFIC_THRESHOLD) -e INPUT_FILE='-' -i --rm monitor/processor
 
 cleanup:
-	docker rmi datadog/processor_tests datadog/processor
+	docker rmi monitor/processor_tests monitor/processor
 
 zip:
 	git archive -o monitor.zip HEAD
