@@ -71,7 +71,7 @@ class LogProcessor(object):
 
         return '\n'.join([section_report, method_report])
 
-    def _generate_stats(self):
+    def _generate_stats(self) -> Tuple['Actions', 'str']:
         timestamp = self.last_seen_second
         # Generate stats from the last used timestamp.
         stats_from = self.stats_last_returned + 1
